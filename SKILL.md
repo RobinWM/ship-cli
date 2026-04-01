@@ -1,12 +1,12 @@
 ---
-name: submit-to-cli
+name: dirs-submit
 description:
   A CLI tool wrapping the aidirs.org submission API. Use when the user needs to submit a URL to aidirs or preview
   site metadata via the CLI. Supports three commands: login (store credentials), submit (send URL), and fetch
   (preview without submitting).
 ---
 
-# submit-to-cli
+# dirs-submit
 
 ## Overview
 
