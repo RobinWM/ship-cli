@@ -21,7 +21,7 @@ esac
 echo "Installing submit-to-cli for $OS/$ARCH..."
 
 # If a pre-built binary exists in a release, download it
-RELEASE_URL="https://github.com/allinaigc/submit-to-cli/releases/latest/download/submit-to-cli-${OS}-${ARCH}"
+RELEASE_URL="https://github.com/RobinWM/submit-to-cli/releases/latest/download/submit-to-cli-${OS}-${ARCH}"
 if command -v curl &>/dev/null; then
   CURL_CMD="curl -fsSL"
 elif command -v wget &>/dev/null; then

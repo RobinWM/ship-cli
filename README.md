@@ -5,13 +5,13 @@ CLI tool for submitting URLs to [aidirs.org](https://aidirs.org).
 ## Installation
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/allinaigc/submit-to-cli/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-to-cli/main/install.sh)
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/allinaigc/submit-to-cli.git
+git clone https://github.com/RobinWM/submit-to-cli.git
 cd submit-to-cli
 bash install.sh
 ```
