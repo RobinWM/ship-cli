@@ -15,14 +15,24 @@ interface Config {
 }
 
 async function loadConfig(): Promise<Config> {
+  // Environment variables take priority over config file
+  const envToken = process.env.DIRS_TOKEN;
+  const envBaseUrl = process.env.DIRS_BASE_URL;
+
+  if (envToken && envBaseUrl) {
+    return { DIRS_TOKEN: envToken, DIRS_BASE_URL: envBaseUrl.replace(/\/$/, '') };
+  }
+
   if (!(await fs.pathExists(CONFIG_PATH))) {
     throw new Error(`Not logged in. Run 'submit-to-cli login' first.`);
   }
   const config = await fs.readJson(CONFIG_PATH);
-  if (!config.DIRS_TOKEN) {
-    throw new Error(`DIRS_TOKEN not found in config. Run 'submit-to-cli login' first.`);
+  const token = envToken || config.DIRS_TOKEN;
+  const baseUrl = envBaseUrl || config.DIRS_BASE_URL;
+  if (!token) {
+    throw new Error(`DIRS_TOKEN not found. Set DIRS_TOKEN env var or run 'submit-to-cli login' first.`);
   }
-  return config;
+  return { DIRS_TOKEN: token, DIRS_BASE_URL: (baseUrl || 'https://aidirs.org').replace(/\/$/, '') };
 }
 
 function openBrowser(url: string) {
