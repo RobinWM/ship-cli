@@ -1,0 +1,30 @@
+{
+  "name": "submit-to-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for submitting URLs to aidirs.org",
+  "main": "dist/index.js",
+  "bin": {
+    "submit-to-cli": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "tsc"
+  },
+  "keywords": [
+    "aidirs",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.20"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^20.14.0",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const commander_1 = require("commander");
+const fs = __importStar(require("fs-extra"));
+const path = __importStar(require("path"));
+const inquirer_1 = __importDefault(require("inquirer"));
+const https = __importStar(require("https"));
+const http = __importStar(require("http"));
+const CONFIG_PATH = path.join(process.env.HOME || '', '.config', 'submit-to-cli', 'config.json');
+const DEFAULT_BASE_URL = 'https://aidirs.org';
+async function loadConfig() {
+    if (!(await fs.pathExists(CONFIG_PATH))) {
+        throw new Error(`Not logged in. Run 'submit-to-cli login' first.`);
+    }
+    const config = await fs.readJson(CONFIG_PATH);
+    if (!config.AIDIRS_TOKEN) {
+        throw new Error(`AIDIRS_TOKEN not found in config. Run 'submit-to-cli login' first.`);
+    }
+    return config;
+}
+async function httpPost(baseUrl, token, endpoint, body) {
+    const url = new URL(endpoint, baseUrl);
+    const isHttps = url.protocol === 'https:';
+    const httpMod = isHttps ? https : http;
+    return new Promise((resolve, reject) => {
+        const data = JSON.stringify(body);
+        const req = httpMod.request({
+            hostname: url.hostname,
+            port: url.port,
+            path: url.pathname,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data),
+                'Authorization': `Bearer ${token}`,
+            },
+        }, (res) => {
+            let body = '';
+            res.on('data', (chunk) => { body += chunk; });
+            res.on('end', () => {
+                try {
+                    const json = JSON.parse(body);
+                    resolve({ status: res.statusCode, data: json });
+                }
+                catch {
+                    resolve({ status: res.statusCode, data: body });
+                }
+            });
+        });
+        req.on('error', reject);
+        req.write(data);
+        req.end();
+    });
+}
+async function login() {
+    console.log('Logging in to aidirs.org...\n');
+    const inq = inquirer_1.default.createPromptModule();
+    const answers = await inq([
+        {
+            type: 'input',
+            name: 'AIDIRS_TOKEN',
+            message: 'Enter your AIDIRS_TOKEN:',
+            validate: (input) => input.trim().length > 0 ? true : 'Token cannot be empty',
+        },
+        {
+            type: 'input',
+            name: 'AIDIRS_BASE_URL',
+            message: 'Enter the API base URL:',
+            default: DEFAULT_BASE_URL,
+            validate: (input) => {
+                try {
+                    new URL(input);
+                    return true;
+                }
+                catch {
+                    return 'Please enter a valid URL';
+                }
+            },
+        },
+    ]);
+    const config = {
+        AIDIRS_TOKEN: String(answers.AIDIRS_TOKEN).trim(),
+        AIDIRS_BASE_URL: String(answers.AIDIRS_BASE_URL).trim().replace(/\/$/, ''),
+    };
+    await fs.ensureFile(CONFIG_PATH);
+    await fs.writeJson(CONFIG_PATH, config, { spaces: 2 });
+    console.log(`\n✅ Login saved to ${CONFIG_PATH}`);
+}
+async function submit(url) {
+    const config = await loadConfig();
+    console.log(`Submitting ${url} to ${config.AIDIRS_BASE_URL}...`);
+    try {
+        const result = await httpPost(config.AIDIRS_BASE_URL, config.AIDIRS_TOKEN, '/api/submit', { link: url });
+        console.log(`Status: ${result.status}`);
+        console.log('Response:', JSON.stringify(result.data, null, 2));
+    }
+    catch (err) {
+        console.error(`❌ Error: ${err.message}`);
+        process.exit(1);
+    }
+}
+async function fetch(url) {
+    const config = await loadConfig();
+    console.log(`Fetching preview for ${url} from ${config.AIDIRS_BASE_URL}...`);
+    try {
+        const result = await httpPost(config.AIDIRS_BASE_URL, config.AIDIRS_TOKEN, '/api/fetch-website', { link: url });
+        console.log(`Status: ${result.status}`);
+        console.log('Response:', JSON.stringify(result.data, null, 2));
+    }
+    catch (err) {
+        console.error(`❌ Error: ${err.message}`);
+        process.exit(1);
+    }
+}
+const program = new commander_1.Command();
+program
+    .name('submit-to-cli')
+    .description('CLI tool for submitting URLs to aidirs.org')
+    .version('1.0.0');
+program
+    .command('login')
+    .description('Login and save API token')
+    .action(login);
+program
+    .command('submit <url>')
+    .description('Submit a URL to aidirs')
+    .action(submit);
+program
+    .command('fetch <url>')
+    .description('Preview a URL without creating a record')
+    .action(fetch);
+program.parse(process.argv);
+// Show help if no command provided
+if (process.argv.length === 2) {
+    program.help();
+}
