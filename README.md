@@ -47,12 +47,15 @@ submit-dir login --site backlinkdirs.com
 ```bash
 submit-dir submit https://example.com
 submit-dir submit https://example.com --site backlinkdirs.com
+submit-dir submit https://example.com --json
+submit-dir submit https://example.com --quiet
 ```
 
 ### Preview a URL (no record created)
 ```bash
 submit-dir fetch https://example.com
 submit-dir fetch https://example.com --site aidirs.org
+submit-dir fetch https://example.com --json
 ```
 
 ### Show help
@@ -67,6 +70,8 @@ submit-dir --help
 | `login` | Browser-based login (supports aidirs.org & backlinkdirs.com) |
 | `submit <url>` | Submit a URL to the selected site |
 | `fetch <url>` | Preview a URL without creating a record |
+| `--json` | Machine-readable output for scripts |
+| `--quiet` | Print only response payload |
 | `--help` | Show help |
 
 ## Config Location
@@ -100,3 +105,13 @@ export DIRS_TOKEN="your-token-here"
 export DIRS_BASE_URL="https://aidirs.org"
 submit-dir submit https://example.com
 ```
+
+## Development
+
+```bash
+npm install
+npm run build
+npm test
+```
+
+Publishing uses `files` in `package.json`, so npm packages include `dist/` even though build output is generated from `src/`.

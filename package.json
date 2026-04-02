@@ -6,9 +6,16 @@
   "bin": {
     "submit-dir": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "install.sh"
+  ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "tsc"
+    "prepublishOnly": "npm run build",
+    "test": "npm run build && node --test tests/**/*.test.js"
   },
   "keywords": [
     "aidirs",

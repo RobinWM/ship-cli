@@ -64,6 +64,11 @@ interface HttpResponse<T = unknown> {
   data: T;
 }
 
+interface CommandOutputOptions {
+  json?: boolean;
+  quiet?: boolean;
+}
+
 class CliError extends Error {
   constructor(
     message: string,
@@ -319,6 +324,20 @@ async function saveSiteConfig(site: SupportedSite, token: string): Promise<void>
   await writeConfig(nextConfig);
 }
 
+async function promptForSite(): Promise<SupportedSite> {
+  const inq = (inquirer as unknown as { createPromptModule: () => (questions: unknown[]) => Promise<{ site: SupportedSite }> }).createPromptModule();
+  const { site } = await inq([
+    {
+      type: 'list',
+      name: 'site',
+      message: 'Which site do you want to login to?',
+      choices: SUPPORTED_SITES.map((value) => ({ name: value, value })),
+    },
+  ]);
+
+  return site;
+}
+
 async function login(options: { site?: string }) {
   const site = options.site
     ? normalizeSite(options.site)
@@ -342,20 +361,6 @@ async function login(options: { site?: string }) {
     console.error(`\n❌ Login failed: ${getErrorMessage(error)}`);
     process.exit(error instanceof CliError ? error.exitCode : EXIT_CODES.AUTH_ERROR);
   }
-}
-
-async function promptForSite(): Promise<SupportedSite> {
-  const inq = (inquirer as unknown as { createPromptModule: () => (questions: unknown[]) => Promise<{ site: SupportedSite }> }).createPromptModule();
-  const { site } = await inq([
-    {
-      type: 'list',
-      name: 'site',
-      message: 'Which site do you want to login to?',
-      choices: SUPPORTED_SITES.map((value) => ({ name: value, value })),
-    },
-  ]);
-
-  return site;
 }
 
 async function httpPost(
@@ -436,40 +441,84 @@ async function httpPost(
   throw new CliError('Request failed after retries.', EXIT_CODES.NETWORK_ERROR);
 }
 
-function printResult(result: HttpResponse): void {
+function printJson(value: unknown): void {
+  console.log(JSON.stringify(value, null, 2));
+}
+
+function printResult(result: HttpResponse, options: CommandOutputOptions): void {
+  if (options.json) {
+    printJson({ success: true, status: result.status, data: result.data });
+    return;
+  }
+
+  if (options.quiet) {
+    if (typeof result.data === 'string') {
+      console.log(result.data);
+      return;
+    }
+
+    printJson(result.data);
+    return;
+  }
+
   console.log(`Status: ${result.status}`);
   console.log('Response:', JSON.stringify(result.data, null, 2));
 }
 
-async function submit(targetUrl: string, options: { site?: string }) {
-  try {
-    const validUrl = validateUrl(targetUrl);
-    const config = await loadConfig({ site: options.site });
-    console.log(`Submitting ${validUrl} to ${config.baseUrl}...`);
-    const result = await httpPost(config.baseUrl, config.token, '/api/submit', { link: validUrl });
-    printResult(result);
-  } catch (error: unknown) {
+function printCommandError(error: unknown, options: CommandOutputOptions): never {
+  if (options.json) {
+    const exitCode = error instanceof CliError ? error.exitCode : EXIT_CODES.GENERAL_ERROR;
+    const payload: Record<string, unknown> = {
+      success: false,
+      error: getErrorMessage(error),
+      exitCode,
+    };
+
+    if (error instanceof HttpError) {
+      payload.status = error.status;
+      payload.data = error.data;
+    }
+
+    printJson(payload);
+  } else {
     console.error(`❌ Error: ${getErrorMessage(error)}`);
     if (error instanceof HttpError && error.data) {
       console.error(JSON.stringify(error.data, null, 2));
     }
-    process.exit(error instanceof CliError ? error.exitCode : EXIT_CODES.GENERAL_ERROR);
+  }
+
+  process.exit(error instanceof CliError ? error.exitCode : EXIT_CODES.GENERAL_ERROR);
+}
+
+async function submit(targetUrl: string, options: { site?: string; json?: boolean; quiet?: boolean }) {
+  try {
+    const validUrl = validateUrl(targetUrl);
+    const config = await loadConfig({ site: options.site });
+
+    if (!options.json && !options.quiet) {
+      console.log(`Submitting ${validUrl} to ${config.baseUrl}...`);
+    }
+
+    const result = await httpPost(config.baseUrl, config.token, '/api/submit', { link: validUrl });
+    printResult(result, options);
+  } catch (error: unknown) {
+    printCommandError(error, options);
   }
 }
 
-async function fetchPreview(targetUrl: string, options: { site?: string }) {
+async function fetchPreview(targetUrl: string, options: { site?: string; json?: boolean; quiet?: boolean }) {
   try {
     const validUrl = validateUrl(targetUrl);
     const config = await loadConfig({ site: options.site });
-    console.log(`Fetching preview for ${validUrl} from ${config.baseUrl}...`);
-    const result = await httpPost(config.baseUrl, config.token, '/api/fetch-website', { link: validUrl });
-    printResult(result);
-  } catch (error: unknown) {
-    console.error(`❌ Error: ${getErrorMessage(error)}`);
-    if (error instanceof HttpError && error.data) {
-      console.error(JSON.stringify(error.data, null, 2));
+
+    if (!options.json && !options.quiet) {
+      console.log(`Fetching preview for ${validUrl} from ${config.baseUrl}...`);
     }
-    process.exit(error instanceof CliError ? error.exitCode : EXIT_CODES.GENERAL_ERROR);
+
+    const result = await httpPost(config.baseUrl, config.token, '/api/fetch-website', { link: validUrl });
+    printResult(result, options);
+  } catch (error: unknown) {
+    printCommandError(error, options);
   }
 }
 
@@ -490,12 +539,16 @@ program
   .command('submit <url>')
   .description('Submit a URL to the selected site')
   .option('--site <site>', `Override configured site (${SUPPORTED_SITES.join(', ')})`)
+  .option('--json', 'Print machine-readable JSON output')
+  .option('--quiet', 'Print only response payload')
   .action(submit);
 
 program
   .command('fetch <url>')
   .description('Preview a URL without creating a record')
   .option('--site <site>', `Override configured site (${SUPPORTED_SITES.join(', ')})`)
+  .option('--json', 'Print machine-readable JSON output')
+  .option('--quiet', 'Print only response payload')
   .action(fetchPreview);
 
 program.parse(process.argv);
