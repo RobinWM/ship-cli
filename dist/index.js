@@ -60,7 +60,7 @@ const RELEASE_REPO = 'RobinWM/submit-dir-cli';
 const RELEASE_API_URL = `https://api.github.com/repos/${RELEASE_REPO}/releases/latest`;
 const UPDATE_CHECK_PATH = path.join(process.env.HOME || '', '.config', 'submit-dir', 'update-check.json');
 const UPDATE_CHECK_INTERVAL_MS = 12 * 60 * 60 * 1000;
-const REQUEST_TIMEOUT_MS = 15000;
+const REQUEST_TIMEOUT_MS = 60000;
 const MAX_RETRIES = 2;
 const EXIT_CODES = {
     GENERAL_ERROR: 1,
