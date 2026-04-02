@@ -8,6 +8,8 @@ CLI tool for submitting URLs to [aidirs.org](https://aidirs.org) and [backlinkdi
 curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-dir-cli/main/install.sh | bash
 ```
 
+> **Windows?** Use [Git Bash](https://git-scm.com/download/win) or [WSL](https://docs.microsoft.com/en-us/windows/wsl/). On PowerShell, use `curl.exe` explicitly.
+
 Or from source:
 
 ```bash

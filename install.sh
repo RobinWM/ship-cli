@@ -21,7 +21,7 @@ esac
 echo "Installing submit-dir for $OS/$ARCH..."
 
 # If a pre-built binary exists in a release, download it
-RELEASE_URL="https://github.com/RobinWM/submit-dir-cli-cli/releases/latest/download/submit-dir-${OS}-${ARCH}"
+RELEASE_URL="https://github.com/RobinWM/submit-dir-cli/releases/latest/download/submit-dir-${OS}-${ARCH}"
 if command -v curl &>/dev/null; then
   CURL_CMD="curl -fsSL"
 elif command -v wget &>/dev/null; then
@@ -35,9 +35,9 @@ fi
 if $CURL_CMD --head "$RELEASE_URL" &>/dev/null; then
   echo "Downloading binary from $RELEASE_URL..."
   if command -v curl &>/dev/null; then
-    curl -fsSL "$RELEASE_URL" -o "$INSTALL_DIR/brennan-cli"
+    curl -fsSL "$RELEASE_URL" -o "$INSTALL_DIR/submit-dir"
   else
-    wget -q "$RELEASE_URL" -O "$INSTALL_DIR/brennan-cli"
+    wget -q "$RELEASE_URL" -O "$INSTALL_DIR/submit-dir"
   fi
   chmod +x "$INSTALL_DIR/submit-dir"
   echo "✅ Installed to $INSTALL_DIR/submit-dir"

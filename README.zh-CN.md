@@ -8,6 +8,8 @@
 curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-dir-cli/main/install.sh | bash
 ```
 
+> **Windows 用户？** 请使用 [Git Bash](https://git-scm.com/download/win) 或 [WSL](https://docs.microsoft.com/en-us/windows/wsl/)。PowerShell 可尝试 `curl.exe`。
+
 或从源码安装：
 
 ```bash
