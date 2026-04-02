@@ -1,10 +1,10 @@
 {
-  "name": "submit-to-cli",
+  "name": "submit-dir-cli",
   "version": "1.0.0",
   "description": "CLI tool for submitting URLs to aidirs.org",
   "main": "dist/index.js",
   "bin": {
-    "submit-to-cli": "./dist/index.js"
+    "submit-dir": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

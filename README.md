@@ -1,18 +1,18 @@
-# submit-to-cli
+# submit-dir
 
 CLI tool for submitting URLs to [aidirs.org](https://aidirs.org) and [backlinkdirs.com](https://backlinkdirs.com).
 
 ## Installation
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-to-cli/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-dir/main/install.sh)
 ```
 
 Or from source:
 
 ```bash
-git clone https://github.com/RobinWM/submit-to-cli.git
-cd submit-to-cli
+git clone https://github.com/RobinWM/submit-dir.git
+cd submit-dir
 bash install.sh
 ```
 
@@ -21,7 +21,7 @@ bash install.sh
 > **Note:** Submitting URLs requires an active subscription plan.
 
 ```bash
-submit-to-cli login
+submit-dir login
 ```
 
 Select the site, browser opens automatically, login and done. Token is auto-saved. If you don't have an API token yet, one will be created automatically.
@@ -30,22 +30,22 @@ Select the site, browser opens automatically, login and done. Token is auto-save
 
 ### Login
 ```bash
-submit-to-cli login
+submit-dir login
 ```
 
 ### Submit a URL
 ```bash
-submit-to-cli submit https://example.com
+submit-dir submit https://example.com
 ```
 
 ### Preview a URL (no record created)
 ```bash
-submit-to-cli fetch https://example.com
+submit-dir fetch https://example.com
 ```
 
 ### Show help
 ```bash
-submit-to-cli --help
+submit-dir --help
 ```
 
 ## Commands
@@ -59,7 +59,7 @@ submit-to-cli --help
 
 ## Config Location
 
-`~/.config/submit-to-cli/config.json`
+`~/.config/submit-dir/config.json`
 
 ```json
 {
@@ -75,5 +75,5 @@ Config file takes priority. Environment variables serve as fallback:
 ```bash
 export DIRS_TOKEN="your-token-here"
 export DIRS_BASE_URL="https://aidirs.org"
-submit-to-cli submit https://example.com
+submit-dir submit https://example.com
 ```

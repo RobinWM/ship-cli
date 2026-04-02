@@ -1,18 +1,18 @@
-# submit-to-cli
+# submit-dir
 
 一键提交 URL 到 [aidirs.org](https://aidirs.org) 和 [backlinkdirs.com](https://backlinkdirs.com) 的命令行工具。
 
 ## 安装
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-to-cli/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/RobinWM/submit-dir/main/install.sh)
 ```
 
 或从源码安装：
 
 ```bash
-git clone https://github.com/RobinWM/submit-to-cli.git
-cd submit-to-cli
+git clone https://github.com/RobinWM/submit-dir.git
+cd submit-dir
 bash install.sh
 ```
 
@@ -21,7 +21,7 @@ bash install.sh
 > **注意：** 提交 URL 需要订阅计划。
 
 ```bash
-submit-to-cli login
+submit-dir login
 ```
 
 选择站点 → 自动打开浏览器 → 在浏览器里完成登录 → Token 自动保存。
@@ -31,17 +31,17 @@ submit-to-cli login
 
 ### 提交 URL
 ```bash
-submit-to-cli submit https://example.com
+submit-dir submit https://example.com
 ```
 
 ### 预览（不产生记录）
 ```bash
-submit-to-cli fetch https://example.com
+submit-dir fetch https://example.com
 ```
 
 ### 查看帮助
 ```bash
-submit-to-cli --help
+submit-dir --help
 ```
 
 ## 命令
@@ -55,7 +55,7 @@ submit-to-cli --help
 
 ## 配置文件
 
-`~/.config/submit-to-cli/config.json`
+`~/.config/submit-dir/config.json`
 
 ```json
 {
@@ -71,5 +71,5 @@ submit-to-cli --help
 ```bash
 export DIRS_TOKEN="your-token-here"
 export DIRS_BASE_URL="https://aidirs.org"
-submit-to-cli submit https://example.com
+submit-dir submit https://example.com
 ```

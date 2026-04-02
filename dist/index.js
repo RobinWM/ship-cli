@@ -43,13 +43,13 @@ const path = __importStar(require("path"));
 const http = __importStar(require("http"));
 const child_process_1 = require("child_process");
 const inquirer_1 = __importDefault(require("inquirer"));
-const CONFIG_PATH = path.join(process.env.HOME || '', '.config', 'submit-to-cli', 'config.json');
+const CONFIG_PATH = path.join(process.env.HOME || '', '.config', 'submit-dir', 'config.json');
 async function loadConfig() {
     // Config file takes priority, environment variables as fallback
     const envToken = process.env.DIRS_TOKEN;
     const envBaseUrl = process.env.DIRS_BASE_URL;
     if (!(await fs.pathExists(CONFIG_PATH)) && !envToken) {
-        throw new Error(`Not logged in. Run 'submit-to-cli login' first.`);
+        throw new Error(`Not logged in. Run 'submit-dir login' first.`);
     }
     let token = '';
     let baseUrl = 'https://aidirs.org';
@@ -63,7 +63,7 @@ async function loadConfig() {
         baseUrl = (envBaseUrl || 'https://aidirs.org').replace(/\/$/, '');
     }
     if (!token) {
-        throw new Error(`DIRS_TOKEN not found. Set DIRS_TOKEN env var or run 'submit-to-cli login' first.`);
+        throw new Error(`DIRS_TOKEN not found. Set DIRS_TOKEN env var or run 'submit-dir login' first.`);
     }
     return { DIRS_TOKEN: token, DIRS_BASE_URL: baseUrl };
 }
@@ -227,7 +227,7 @@ async function fetch(url) {
 }
 const program = new commander_1.Command();
 program
-    .name('submit-to-cli')
+    .name('submit-dir')
     .description('CLI tool for submitting URLs to aidirs.org and backlinkdirs.com')
     .version('1.0.0');
 program

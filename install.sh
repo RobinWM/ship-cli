@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-INSTALL_DIR="${INSTALL_DIR:-$HOME/.submit-to-cli/bin}"
+INSTALL_DIR="${INSTALL_DIR:-$HOME/.submit-dir/bin}"
 mkdir -p "$INSTALL_DIR"
 
 # Detect platform
@@ -18,10 +18,10 @@ case "$ARCH" in
     ;;
 esac
 
-echo "Installing submit-to-cli for $OS/$ARCH..."
+echo "Installing submit-dir for $OS/$ARCH..."
 
 # If a pre-built binary exists in a release, download it
-RELEASE_URL="https://github.com/RobinWM/submit-to-cli/releases/latest/download/submit-to-cli-${OS}-${ARCH}"
+RELEASE_URL="https://github.com/RobinWM/submit-dir-cli/releases/latest/download/submit-dir-${OS}-${ARCH}"
 if command -v curl &>/dev/null; then
   CURL_CMD="curl -fsSL"
 elif command -v wget &>/dev/null; then
@@ -39,17 +39,17 @@ if $CURL_CMD --head "$RELEASE_URL" &>/dev/null; then
   else
     wget -q "$RELEASE_URL" -O "$INSTALL_DIR/brennan-cli"
   fi
-  chmod +x "$INSTALL_DIR/submit-to-cli"
-  echo "✅ Installed to $INSTALL_DIR/submit-to-cli"
+  chmod +x "$INSTALL_DIR/submit-dir"
+  echo "✅ Installed to $INSTALL_DIR/submit-dir"
 else
   # Fall back to building from source
   echo "No pre-built binary found. Building from source..."
   cd "$(dirname "$0")"
   npm install
   npm run build
-  cp dist/index.js "$INSTALL_DIR/submit-to-cli"
-  chmod +x "$INSTALL_DIR/submit-to-cli"
-  echo "✅ Built and installed to $INSTALL_DIR/submit-to-cli"
+  cp dist/index.js "$INSTALL_DIR/submit-dir"
+  chmod +x "$INSTALL_DIR/submit-dir"
+  echo "✅ Built and installed to $INSTALL_DIR/submit-dir"
 fi
 
 # Add to PATH if needed
@@ -57,10 +57,10 @@ SHELL_RC="$HOME/.bashrc"
 if [ -f "$SHELL_RC" ]; then
   if ! grep -q "$INSTALL_DIR" "$SHELL_RC"; then
     echo "" >> "$SHELL_RC"
-    echo "# submit-to-cli" >> "$SHELL_RC"
-    echo "export PATH=\"\$HOME/.submit-to-cli/bin:\$PATH\"" >> "$SHELL_RC"
+    echo "# submit-dir" >> "$SHELL_RC"
+    echo "export PATH=\"\$HOME/.submit-dir/bin:\$PATH\"" >> "$SHELL_RC"
     echo "Added $INSTALL_DIR to PATH in $SHELL_RC"
   fi
 fi
 
-echo "✅ Done! Run 'submit-to-cli --help' to get started."
+echo "✅ Done! Run 'submit-dir --help' to get started."
