@@ -9,7 +9,7 @@ import { execFileSync } from 'child_process';
 import { randomBytes } from 'crypto';
 import inquirer from 'inquirer';
 
-const CLI_VERSION = '1.0.1';
+const CLI_VERSION = require('../package.json').version as string;
 const DEFAULT_SITE = 'aidirs.org';
 const SUPPORTED_SITES = ['aidirs.org', 'backlinkdirs.com'] as const;
 type SupportedSite = (typeof SUPPORTED_SITES)[number];
