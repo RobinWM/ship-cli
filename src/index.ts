@@ -20,8 +20,8 @@ const SITE_BASE_URLS: Record<SupportedSite, string> = {
 };
 
 const SITE_AUTH_URLS: Record<SupportedSite, string> = {
-  'aidirs.org': 'https://aidirs.org/auth/login',
-  'backlinkdirs.com': 'https://backlinkdirs.com/auth/login',
+  'aidirs.org': 'https://aidirs.org/api/cli/callback',
+  'backlinkdirs.com': 'https://backlinkdirs.com/api/cli/callback',
 };
 
 const RELEASE_REPO = 'RobinWM/submit-dir-cli';
@@ -614,7 +614,8 @@ async function login(options: { site?: string }) {
   const port = await getAvailablePort(38492);
   const callbackUrl = `http://localhost:${port}/callback`;
   const state = randomBytes(24).toString('hex');
-  const authUrl = `${SITE_AUTH_URLS[site]}?callback=${encodeURIComponent(callbackUrl)}&state=${encodeURIComponent(state)}`;
+  const callbackWithState = `${callbackUrl}?state=${encodeURIComponent(state)}`;
+  const authUrl = `${SITE_AUTH_URLS[site]}?callback=${encodeURIComponent(callbackWithState)}`;
 
   console.log(`\n🔐 Opening browser to login to ${site}...`);
   console.log(`   Waiting for callback on localhost:${port}\n`);
