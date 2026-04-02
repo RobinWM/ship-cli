@@ -4,7 +4,7 @@ set -euo pipefail
 REPO_OWNER="RobinWM"
 REPO_NAME="submit-dir-cli"
 REPO_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}.git"
-RAW_BASE_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main"
+RELEASE_BASE_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download"
 INSTALL_DIR="$HOME/.submit-dir/bin"
 TARGET_BIN="$INSTALL_DIR/submit-dir"
 TEMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t submit-dir)"
@@ -124,7 +124,7 @@ install_release_binary() {
   local os="$1"
   local arch="$2"
   local temp_binary="$TEMP_DIR/submit-dir"
-  local release_url="https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/submit-dir-${os}-${arch}"
+  local release_url="${RELEASE_BASE_URL}/submit-dir-${os}-${arch}"
 
   if ! try_download_file "$release_url" "$temp_binary"; then
     return 1
@@ -158,7 +158,7 @@ find_npm_global_bin() {
 install_from_npm_package() {
   require_command npm
 
-  local package_url="${RAW_BASE_URL}/submit-dir-latest.tgz"
+  local package_url="${RELEASE_BASE_URL}/submit-dir-latest.tgz"
   local package_tgz="$TEMP_DIR/submit-dir.tgz"
 
   if ! try_download_file "$package_url" "$package_tgz"; then

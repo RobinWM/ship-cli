@@ -115,3 +115,10 @@ npm test
 ```
 
 Publishing uses `files` in `package.json`, so npm packages include `dist/` even though build output is generated from `src/`.
+
+GitHub Releases are expected to publish:
+- `submit-dir-linux-x64`
+- `submit-dir-linux-arm64`
+- `submit-dir-darwin-x64`
+- `submit-dir-darwin-arm64`
+- `submit-dir-latest.tgz`

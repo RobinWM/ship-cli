@@ -110,3 +110,10 @@ npm test
 ```
 
 发布时通过 `package.json` 的 `files` 字段控制内容，npm 包会包含 `dist/` 构建产物。
+
+GitHub Release 预期会发布这些资产：
+- `submit-dir-linux-x64`
+- `submit-dir-linux-arm64`
+- `submit-dir-darwin-x64`
+- `submit-dir-darwin-arm64`
+- `submit-dir-latest.tgz`
