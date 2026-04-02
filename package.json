@@ -14,6 +14,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "build:release": "npm run build && pkg dist/index.js --targets node20-linux-x64,node20-linux-arm64,node20-macos-x64,node20-macos-arm64 --output release-assets/submit-dir",
     "prepublishOnly": "npm run build",
     "test": "npm run build && node --test tests/*.test.js"
   },
@@ -32,6 +33,10 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.9",
     "@types/node": "^20.14.0",
+    "@yao-pkg/pkg": "^6.14.2",
     "typescript": "^5.4.5"
+  },
+  "pkg": {
+    "outputPath": "release-assets"
   }
 }

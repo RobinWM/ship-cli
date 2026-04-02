@@ -11,6 +11,54 @@ permissions:
 
 jobs:
   build-release-assets:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: node20-linux-x64
+            asset_name: submit-dir-linux-x64
+          - os: ubuntu-latest
+            target: node20-linux-arm64
+            asset_name: submit-dir-linux-arm64
+          - os: macos-latest
+            target: node20-macos-x64
+            asset_name: submit-dir-darwin-x64
+          - os: macos-latest
+            target: node20-macos-arm64
+            asset_name: submit-dir-darwin-arm64
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build standalone binary
+        run: |
+          npm run build
+          mkdir -p release-assets
+          npx pkg dist/index.js --targets ${{ matrix.target }} --output release-assets/${{ matrix.asset_name }}
+
+      - name: Upload binary to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME}"
+          if [ -z "$TAG_NAME" ]; then
+            TAG_NAME="$(gh release list --limit 1 --json tagName --jq '.[0].tagName')"
+          fi
+          gh release upload "$TAG_NAME" release-assets/${{ matrix.asset_name }} --clobber
+
+  upload-package:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,34 +74,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build
-
-      - name: Create npm package tarball
+      - name: Build package tarballs
         run: |
-          npm pack
-          cp submit-dir-*.tgz submit-dir-latest.tgz
+          npm run build
+          PACKAGE_TGZ="$(npm pack | tail -n 1)"
+          cp "$PACKAGE_TGZ" submit-dir-latest.tgz
+          echo "PACKAGE_TGZ=$PACKAGE_TGZ" >> "$GITHUB_ENV"
 
-      - name: Prepare standalone binary wrapper
-        run: |
-          mkdir -p release-assets
-          cp dist/index.js release-assets/submit-dir-linux-x64
-          cp dist/index.js release-assets/submit-dir-linux-arm64
-          cp dist/index.js release-assets/submit-dir-darwin-x64
-          cp dist/index.js release-assets/submit-dir-darwin-arm64
-          chmod +x release-assets/submit-dir-linux-x64
-          chmod +x release-assets/submit-dir-linux-arm64
-          chmod +x release-assets/submit-dir-darwin-x64
-          chmod +x release-assets/submit-dir-darwin-arm64
-          mv submit-dir-*.tgz release-assets/
-          mv submit-dir-latest.tgz release-assets/
-
-      - name: Upload assets to release
+      - name: Upload tarballs to release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG_NAME="${GITHUB_REF_NAME}"
-          if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" = "" ]; then
+          if [ -z "$TAG_NAME" ]; then
             TAG_NAME="$(gh release list --limit 1 --json tagName --jq '.[0].tagName')"
           fi
-          gh release upload "$TAG_NAME" release-assets/* --clobber
+          gh release upload "$TAG_NAME" "$PACKAGE_TGZ" submit-dir-latest.tgz --clobber
