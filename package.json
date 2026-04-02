@@ -16,7 +16,10 @@
     "build": "tsc",
     "build:release": "npm run build && pkg dist/index.js --targets node20-linux-x64,node20-linux-arm64,node20-macos-x64,node20-macos-arm64 --output release-assets/submit-dir",
     "prepublishOnly": "npm run build",
-    "test": "npm run build && node --test tests/*.test.js"
+    "test": "npm run build && node --test tests/*.test.js",
+    "release:patch": "./scripts/release.sh patch",
+    "release:minor": "./scripts/release.sh minor",
+    "release:major": "./scripts/release.sh major"
   },
   "keywords": [
     "aidirs",

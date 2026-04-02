@@ -114,6 +114,14 @@ npm run build
 npm test
 ```
 
+Release a new version:
+
+```bash
+./scripts/release.sh patch
+./scripts/release.sh minor
+./scripts/release.sh major
+```
+
 Publishing uses `files` in `package.json`, so npm packages include `dist/` even though build output is generated from `src/`.
 
 GitHub Releases are expected to publish:
