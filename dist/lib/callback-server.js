@@ -41,10 +41,14 @@ const sites_1 = require("./sites");
 function waitForCallback(port, expectedSite, expectedState) {
     return new Promise((resolve, reject) => {
         let settled = false;
+        let timeoutHandle;
         const finish = (callback) => {
             if (settled)
                 return;
             settled = true;
+            if (timeoutHandle) {
+                clearTimeout(timeoutHandle);
+            }
             server.close(() => callback());
         };
         const server = http.createServer((req, res) => {
@@ -87,7 +91,7 @@ function waitForCallback(port, expectedSite, expectedState) {
             finish(() => reject(new errors_1.CliError(error, errors_1.EXIT_CODES.AUTH_ERROR)));
         });
         server.listen(port, '127.0.0.1');
-        setTimeout(() => {
+        timeoutHandle = setTimeout(() => {
             finish(() => reject(new errors_1.CliError('Login timeout (5 minutes). Please try again.', errors_1.EXIT_CODES.AUTH_ERROR)));
         }, 5 * 60 * 1000);
     });

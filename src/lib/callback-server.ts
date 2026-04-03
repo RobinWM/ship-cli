@@ -9,10 +9,14 @@ export function waitForCallback(
 ): Promise<{ token: string; site: SupportedSite }> {
   return new Promise((resolve, reject) => {
     let settled = false;
+    let timeoutHandle: NodeJS.Timeout | undefined;
 
     const finish = (callback: () => void) => {
       if (settled) return;
       settled = true;
+      if (timeoutHandle) {
+        clearTimeout(timeoutHandle);
+      }
       server.close(() => callback());
     };
 
@@ -63,7 +67,7 @@ export function waitForCallback(
 
     server.listen(port, '127.0.0.1');
 
-    setTimeout(() => {
+    timeoutHandle = setTimeout(() => {
       finish(() => reject(new CliError('Login timeout (5 minutes). Please try again.', EXIT_CODES.AUTH_ERROR)));
     }, 5 * 60 * 1000);
   });
