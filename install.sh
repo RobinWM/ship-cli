@@ -61,7 +61,14 @@ resolve_os() {
   case "$uname_s" in
     Linux) echo "linux" ;;
     Darwin) echo "darwin" ;;
-    MINGW*|MSYS*|CYGWIN*) echo "windows" ;;
+    MINGW*|MSYS*|CYGWIN*)
+      log "Windows is not supported by install.sh."
+      log "Use PowerShell instead:"
+      log "  irm https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/install.ps1 | iex"
+      log "Or CMD:"
+      log "  curl -fsSL https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/install.cmd -o install.cmd && install.cmd && del install.cmd"
+      exit 1
+      ;;
     *) log "Unsupported operating system: $uname_s"; exit 1 ;;
   esac
 }
@@ -124,9 +131,6 @@ install_release_binary() {
   local os="$1"
   local arch="$2"
   local asset_name="ship-${os}-${arch}"
-  if [ "$os" = "windows" ]; then
-    asset_name="ship-windows-${arch}.exe"
-  fi
   local temp_binary="$TEMP_DIR/$asset_name"
   local release_url="${RELEASE_BASE_URL}/${asset_name}"
 
@@ -136,50 +140,14 @@ install_release_binary() {
 
   chmod +x "$temp_binary" 2>/dev/null || true
   verify_binary "$temp_binary"
-
-  if [ "$os" = "windows" ]; then
-    cp "$temp_binary" "$TARGET_BIN.exe"
-    cat > "$TARGET_BIN" <<'EOF'
-#!/bin/sh
-DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-exec "$DIR/ship.exe" "$@"
-EOF
-    chmod +x "$TARGET_BIN"
-    log "✅ Installed release binary to $TARGET_BIN.exe"
-    return 0
-  fi
-
   mv "$temp_binary" "$TARGET_BIN"
   chmod +x "$TARGET_BIN"
   log "✅ Installed release binary to $TARGET_BIN"
   return 0
 }
 
-find_npm_global_bin() {
-  local prefix
-  prefix="$(npm prefix -g)"
-
-  if [ -d "$prefix/bin" ]; then
-    printf '%s\n' "$prefix/bin"
-    return 0
-  fi
-
-  if [ -d "$prefix" ]; then
-    printf '%s\n' "$prefix"
-    return 0
-  fi
-
-  return 1
-}
-
 install_from_npm_package() {
   require_command npm
-
-  if [ "${1:-}" = "windows" ]; then
-    log "No Windows executable asset found in the latest release. Refusing broken JS fallback."
-    log "Please install with: npm install -g https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/ship-latest.tgz"
-    exit 1
-  fi
 
   local package_url="${RELEASE_BASE_URL}/ship-latest.tgz"
   local package_tgz="$TEMP_DIR/ship.tgz"
@@ -235,15 +203,10 @@ main() {
     return 0
   fi
 
-  if install_from_npm_package "$os"; then
+  if install_from_npm_package; then
     ensure_in_path
     log "✅ Done! Run 'ship --help' to get started."
     return 0
-  fi
-
-  if [ "$os" = "windows" ]; then
-    log "Windows source fallback is disabled because it produces a broken JS-only install."
-    exit 1
   fi
 
   install_from_source

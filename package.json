@@ -10,7 +10,9 @@
     "dist",
     "README.md",
     "README.zh-CN.md",
-    "install.sh"
+    "install.sh",
+    "install.ps1",
+    "install.cmd"
   ],
   "scripts": {
     "build": "tsc",

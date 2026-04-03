@@ -4,11 +4,23 @@ CLI tool for submitting URLs to [aidirs.org](https://aidirs.org) and [backlinkdi
 
 ## Installation
 
+### macOS / Linux / WSL
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.sh | bash
 ```
 
-> **Windows?** Use [Git Bash](https://git-scm.com/download/win) or [WSL](https://docs.microsoft.com/en-us/windows/wsl/). On PowerShell, use `curl.exe` explicitly.
+### Windows PowerShell
+
+```powershell
+irm https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.ps1 | iex
+```
+
+### Windows CMD
+
+```cmd
+curl -fsSL https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
 
 Or from source:
 
@@ -129,4 +141,5 @@ GitHub Releases are expected to publish:
 - `ship-linux-arm64`
 - `ship-darwin-x64`
 - `ship-darwin-arm64`
+- `ship-windows-x64.exe`
 - `ship-latest.tgz`

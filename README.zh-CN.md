@@ -4,11 +4,23 @@
 
 ## 安装
 
+### macOS / Linux / WSL
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.sh | bash
 ```
 
-> **Windows 用户？** 请使用 [Git Bash](https://git-scm.com/download/win) 或 [WSL](https://docs.microsoft.com/en-us/windows/wsl/)。PowerShell 可尝试 `curl.exe`。
+### Windows PowerShell
+
+```powershell
+irm https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.ps1 | iex
+```
+
+### Windows CMD
+
+```cmd
+curl -fsSL https://raw.githubusercontent.com/RobinWM/ship-cli/main/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
 
 或从源码安装：
 
@@ -116,4 +128,5 @@ GitHub Release 预期会发布这些资产：
 - `ship-linux-arm64`
 - `ship-darwin-x64`
 - `ship-darwin-arm64`
+- `ship-windows-x64.exe`
 - `ship-latest.tgz`
