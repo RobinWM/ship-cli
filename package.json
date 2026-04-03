@@ -1,6 +1,6 @@
 {
   "name": "ship",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "CLI tool for submitting URLs to aidirs.org",
   "main": "dist/index.js",
   "bin": {
