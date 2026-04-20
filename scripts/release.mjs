@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 
 const bumpType = process.argv[2]
 const allowedBumpTypes = new Set(['patch', 'minor', 'major'])
@@ -53,6 +54,11 @@ function requireCommand(command) {
   }
 }
 
+function getPackageVersion() {
+  const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+  return packageJson.version
+}
+
 if (!allowedBumpTypes.has(bumpType)) {
   fail('Usage: npm run release:<patch|minor|major>')
 }
@@ -72,10 +78,13 @@ if (workingTreeStatus) {
 
 run('npm', ['test'])
 
-const tagName = run('npm', ['version', bumpType, '-m', 'chore: release v%s'], { capture: true })
+const tagName = run('npm', ['version', bumpType, '--no-git-tag-version'], { capture: true })
   .split(/\r?\n/)
   .at(-1)
 
+run('git', ['add', '-A'])
+run('git', ['commit', '-m', `chore: release ${tagName || `v${getPackageVersion()}`}`])
+run('git', ['tag', tagName || `v${getPackageVersion()}`])
 run('git', ['push', 'origin', 'main', '--follow-tags'])
 
-console.log(`Released ${tagName}. GitHub Actions will create the GitHub Release and upload assets.`)
+console.log(`Released ${tagName || `v${getPackageVersion()}`}. GitHub Actions will create the GitHub Release and upload assets.`)
