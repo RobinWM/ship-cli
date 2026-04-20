@@ -1,6 +1,7 @@
 # ship
 
-CLI tool for submitting URLs to [aidirs.org](https://aidirs.org)、[clidirs.com](https://clidirs.com) and [backlinkdirs.com](https://backlinkdirs.com).
+CLI tool for submitting URLs to [aidirs.org](https://aidirs.org)、[clidirs.com](https://clidirs.com) and
+[backlinkdirs.com](https://backlinkdirs.com).
 
 ## Installation
 
@@ -59,46 +60,48 @@ ship login --site aidirs.org
 ship login --site backlinkdirs.com
 ```
 
-Select the site, browser opens automatically, login and done. Tokens are auto-saved per site. If you don't have an API token yet, one will be created automatically.
+Select the site, browser opens automatically, login and done. Tokens are auto-saved per site. If you don't have an API
+token yet, one will be created automatically.
 
 ## Usage
 
 ### Login
+
 ```bash
 ship login
 ship login --site backlinkdirs.com
 ```
 
 ### Submit a URL
+
 ```bash
 ship submit https://example.com
 ship submit https://example.com --site backlinkdirs.com
-ship submit https://example.com --json
 ship submit https://example.com --quiet
 ```
 
 ### Preview a URL (no record created)
+
 ```bash
-ship fetch https://example.com
-ship fetch https://example.com --site aidirs.org
 ship fetch https://example.com --json
 ```
 
 ### Show help
+
 ```bash
 ship --help
 ```
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `login` | Browser-based login (supports aidirs.org & backlinkdirs.com) |
-| `submit <url>` | Submit a URL to the selected site |
-| `fetch <url>` | Preview a URL without creating a record |
-| `--json` | Machine-readable output for scripts |
-| `--quiet` | Print only response payload |
-| `--help` | Show help |
+| Command        | Description                             |
+| -------------- | --------------------------------------- |
+| `login`        | Browser-based login                     |
+| `submit <url>` | Submit a URL to the selected site       |
+| `fetch <url>`  | Preview a URL without creating a record |
+| `--json`       | Machine-readable output for scripts     |
+| `--quiet`      | Print only response payload             |
+| `--help`       | Show help                               |
 
 ## Config Location
 
@@ -115,6 +118,10 @@ ship --help
     "backlinkdirs.com": {
       "token": "your-other-token",
       "baseUrl": "https://backlinkdirs.com"
+    },
+    "clidirs.com": {
+      "token": "your-other-token",
+      "baseUrl": "https://clidirs.com"
     }
   }
 }
@@ -126,7 +133,8 @@ Legacy single-site config is migrated automatically on next login/use.
 
 Config file is the recommended approach for multi-site usage.
 
-Environment variables are still supported, but they work best as a single-site override/fallback for the current command:
+Environment variables are still supported, but they work best as a single-site override/fallback for the current
+command:
 
 ```bash
 export DIRS_TOKEN="your-token-here"
@@ -134,7 +142,9 @@ export DIRS_BASE_URL="https://aidirs.org"
 ship submit https://example.com
 ```
 
-When using environment variables, `DIRS_TOKEN` is applied to the site identified by `DIRS_BASE_URL` (or the default site if `DIRS_BASE_URL` is omitted). For managing multiple sites long-term, use `ship login` so tokens are stored per site in the config file.
+When using environment variables, `DIRS_TOKEN` is applied to the site identified by `DIRS_BASE_URL` (or the default site
+if `DIRS_BASE_URL` is omitted). For managing multiple sites long-term, use `ship login` so tokens are stored per site in
+the config file.
 
 ## Development
 
@@ -169,13 +179,15 @@ After the tag is pushed, [`.github/workflows/release.yml`](./.github/workflows/r
 - uploads all release assets to that GitHub Release
 - publishes the package to npm when `NPM_TOKEN` is configured in GitHub Actions secrets
 
-You can manually rerun the asset build from the GitHub Actions UI by running the `Release` workflow and entering an existing tag.
+You can manually rerun the asset build from the GitHub Actions UI by running the `Release` workflow and entering an
+existing tag.
 
 ## Publish to npm
 
 The release workflow can also publish to npm automatically.
 
-**You must configure `NPM_TOKEN` first. Otherwise the workflow will create the GitHub Release and upload assets, but it will skip `npm publish`.**
+**You must configure `NPM_TOKEN` first. Otherwise the workflow will create the GitHub Release and upload assets, but it
+will skip `npm publish`.**
 
 Add this secret in your repository:
 
@@ -200,9 +212,11 @@ npm pack --dry-run
 npm publish
 ```
 
-Publishing uses `files` in `package.json`, so npm packages include `dist/` even though build output is generated from `src/`.
+Publishing uses `files` in `package.json`, so npm packages include `dist/` even though build output is generated from
+`src/`.
 
 GitHub Releases are expected to publish:
+
 - `ship-linux-x64`
 - `ship-linux-arm64`
 - `ship-darwin-x64`

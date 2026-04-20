@@ -1,6 +1,7 @@
 # ship
 
-一键提交 URL 到 [aidirs.org](https://aidirs.org)、[clidirs.com](https://clidirs.com) 和 [backlinkdirs.com](https://backlinkdirs.com) 的命令行工具。
+一键提交 URL 到 [aidirs.org](https://aidirs.org)、[clidirs.com](https://clidirs.com) 和
+[backlinkdirs.com](https://backlinkdirs.com) 的命令行工具。
 
 ## 安装
 
@@ -59,41 +60,40 @@ ship login --site aidirs.org
 ship login --site backlinkdirs.com
 ```
 
-选择站点 → 自动打开浏览器 → 在浏览器里完成登录 → Token 会按站点自动保存。
-如果还没有 API Token，系统会自动创建一个。
+选择站点 → 自动打开浏览器 → 在浏览器里完成登录 → Token 会按站点自动保存。如果还没有 API Token，系统会自动创建一个。
 
 ## 使用
 
 ### 提交 URL
+
 ```bash
 ship submit https://example.com
 ship submit https://example.com --site backlinkdirs.com
-ship submit https://example.com --json
 ship submit https://example.com --quiet
 ```
 
 ### 预览（不产生记录）
+
 ```bash
-ship fetch https://example.com
-ship fetch https://example.com --site aidirs.org
 ship fetch https://example.com --json
 ```
 
 ### 查看帮助
+
 ```bash
 ship --help
 ```
 
 ## 命令
 
-| 命令 | 说明 |
-|------|------|
-| `login` | 浏览器授权登录（支持 aidirs.org 和 backlinkdirs.com） |
-| `submit <url>` | 提交 URL 到当前选中的站点 |
-| `fetch <url>` | 预览网站元数据，不产生提交记录 |
-| `--json` | 输出机器可读 JSON |
-| `--quiet` | 只输出响应内容 |
-| `--help` | 显示帮助 |
+| 命令           | 说明                           |
+| -------------- | ------------------------------ |
+| `login`        | 浏览器授权登录                 |
+| `submit <url>` | 提交 URL 到当前选中的站点      |
+| `fetch <url>`  | 预览网站元数据，不产生提交记录 |
+| `--json`       | 输出机器可读 JSON              |
+| `--quiet`      | 只输出响应内容                 |
+| `--help`       | 显示帮助                       |
 
 ## 配置文件
 
@@ -110,6 +110,10 @@ ship --help
     "backlinkdirs.com": {
       "token": "your-other-token",
       "baseUrl": "https://backlinkdirs.com"
+    },
+    "clidirs.com": {
+      "token": "your-other-token",
+      "baseUrl": "https://clidirs.com"
     }
   }
 }
@@ -129,7 +133,8 @@ export DIRS_BASE_URL="https://aidirs.org"
 ship submit https://example.com
 ```
 
-使用环境变量时，`DIRS_TOKEN` 会应用到 `DIRS_BASE_URL` 指向的站点（如果未提供 `DIRS_BASE_URL`，则落到默认站点）。如果需要长期管理多个站点，建议使用 `ship login`，把 token 按站点写入配置文件。
+使用环境变量时，`DIRS_TOKEN` 会应用到 `DIRS_BASE_URL` 指向的站点（如果未提供
+`DIRS_BASE_URL`，则落到默认站点）。如果需要长期管理多个站点，建议使用 `ship login`，把 token 按站点写入配置文件。
 
 ## 开发
 
@@ -164,7 +169,8 @@ tag 推送后，[`.github/workflows/release.yml`](./.github/workflows/release.ym
 - 把这些发布资产上传到对应的 GitHub Release
 - 如果 GitHub Actions secrets 里配置了 `NPM_TOKEN`，还会自动发布到 npm
 
-如果只是想重新构建或重新上传某个已有版本的发布资产，也可以在 GitHub Actions 页面手动运行 `Release` 工作流，并输入一个已存在的 tag。
+如果只是想重新构建或重新上传某个已有版本的发布资产，也可以在 GitHub Actions 页面手动运行 `Release`
+工作流，并输入一个已存在的 tag。
 
 ## 发布到 npm
 
@@ -198,6 +204,7 @@ npm publish
 发布时通过 `package.json` 的 `files` 字段控制内容，所以 npm 包会包含 `dist/` 构建产物。
 
 GitHub Release 预期会发布这些资产：
+
 - `ship-linux-x64`
 - `ship-linux-arm64`
 - `ship-darwin-x64`
