@@ -4,9 +4,15 @@ import { spawnSync } from 'node:child_process'
 const bumpType = process.argv[2]
 const allowedBumpTypes = new Set(['patch', 'minor', 'major'])
 
-function resolveCommand(command) {
-  if (process.platform !== 'win32') return command
-  return command === 'npm' ? 'npm.cmd' : command
+function resolveCommand(command, args) {
+  if (command === 'npm' && process.env.npm_execpath) {
+    return {
+      command: process.execPath,
+      args: [process.env.npm_execpath, ...args],
+    }
+  }
+
+  return { command, args }
 }
 
 function fail(message) {
@@ -15,7 +21,8 @@ function fail(message) {
 }
 
 function run(command, args, options = {}) {
-  const result = spawnSync(resolveCommand(command), args, {
+  const resolved = resolveCommand(command, args)
+  const result = spawnSync(resolved.command, resolved.args, {
     stdio: options.capture ? 'pipe' : 'inherit',
     encoding: 'utf8',
   })
@@ -36,7 +43,8 @@ function run(command, args, options = {}) {
 }
 
 function requireCommand(command) {
-  const result = spawnSync(resolveCommand(command), ['--version'], {
+  const resolved = resolveCommand(command, ['--version'])
+  const result = spawnSync(resolved.command, resolved.args, {
     stdio: 'ignore',
   })
 
